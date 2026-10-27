@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>长期记忆复习</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E7C74'/%3E%3Cpath d='M16 22h32M16 32h32M16 42h20' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#F5F4F0;
+  --surface:#FFFFFF;
+  --ink:#23272B;
+  --muted:#70747C;
+  --border:#E3DFD5;
+  --accent:#0E7C74;
+  --accent-deep:#0B5F59;
+  --accent-soft:#E1EFED;
+  --blue:#2563EB;
+  --blue-soft:#E8EFFC;
+  --amber:#B45309;
+  --amber-soft:#FBF0E1;
+  --green:#15803D;
+  --green-soft:#E5F4EA;
+  --danger:#B3261E;
+  --danger-soft:#FBE9E7;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(35,39,43,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB","Segoe UI",system-ui,sans-serif;
+  background:var(--bg);color:var(--ink);
+  font-size:15px;line-height:1.6;
+}
+.wrap{max-width:880px;margin:0 auto;padding:18px 16px 80px}
+a{color:var(--accent);text-decoration:none}
+
+/* ===== 头部 ===== */
+.top{display:flex;flex-direction:column;gap:14px;margin-bottom:14px}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;flex:none}
+.brand h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+.date{font-size:13px;color:var(--muted);white-space:nowrap}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:7px 12px;display:flex;align-items:baseline;gap:6px;box-shadow:var(--shadow)}
+.chip b{font-size:18px;color:var(--accent-deep)}
+.chip span{font-size:12px;color:var(--muted)}
+
+/* ===== 标签页 ===== */
+.tabs{position:sticky;top:0;z-index:20;display:flex;gap:4px;background:var(--bg);padding:8px 0 12px}
+.tab{flex:1;text-align:center;font-size:14px;color:var(--muted);padding:10px 6px;border-radius:10px;border:1px solid transparent;min-height:44px;display:flex;align-items:center;justify-content:center;line-height:1.2}
+.tab.active{background:var(--surface);color:var(--accent-deep);font-weight:600;border-color:var(--border);box-shadow:var(--shadow)}
+
+/* ===== 通用卡片 ===== */
+.view{padding-top:2px}
+h2{font-size:16px;font-weight:600;margin:22px 0 10px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.item{background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:var(--radius);box-shadow:var(--shadow);padding:13px 14px 12px;margin-bottom:10px}
+.item.t-image{border-left-color:var(--blue)}
+.item.t-pdf{border-left-color:var(--amber)}
+.i-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chip-type{font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-deep)}
+.t-image .chip-type{background:var(--blue-soft);color:var(--blue)}
+.t-pdf .chip-type{background:var(--amber-soft);color:var(--amber)}
+.i-date{font-size:12px;color:var(--muted);margin-left:auto}
+.i-body{font-size:15px;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;margin-bottom:8px}
+.i-img{max-width:100%;max-height:260px;border-radius:8px;cursor:zoom-in;display:block;margin-bottom:8px;border:1px solid var(--border)}
+.i-file{display:flex;align-items:center;gap:10px;background:#FAF9F5;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.i-file .fname{flex:1;font-size:14px;word-break:break-all}
+.btn-open{font-size:14px;font-weight:600;color:var(--accent-deep);background:var(--accent-soft);border:none;border-radius:8px;padding:8px 14px;min-height:44px;cursor:pointer}
+.i-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.m-tag{font-size:12px;padding:2px 8px;border-radius:999px;background:#F1F0EB;color:var(--muted)}
+.m-tag.m-next{background:var(--accent-soft);color:var(--accent-deep)}
+.m-tag.m-late{background:var(--amber-soft);color:var(--amber);font-weight:600}
+.i-actions{display:flex;gap:8px}
+.btn{flex:1;min-height:44px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;padding:9px 10px;transition:transform .05s}
+.btn:active{transform:scale(.98)}
+.btn-good{background:var(--accent);color:#fff}
+.btn-good:hover{background:var(--accent-deep)}
+.btn-bad{background:var(--surface);color:var(--danger);border:1px solid var(--border)}
+.btn-bad:hover{background:var(--danger-soft)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;min-height:44px;cursor:pointer}
+.btn-ghost:hover{background:#F6F5F1}
+.btn-danger{background:var(--danger-soft);color:var(--danger);border:1px solid transparent;border-radius:10px;font-size:14px;font-weight:600;padding:9px 14px;min-height:44px;cursor:pointer}
+.btn-danger:hover{border-color:var(--danger)}
+.btn-primary{width:100%;min-height:48px;background:var(--accent);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px}
+.btn-primary:hover{background:var(--accent-deep)}
+
+/* ===== 复习视图 ===== */
+.prog-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 14px;margin-bottom:12px}
+.prog-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px}
+.prog-head span{font-size:14px;font-weight:600}
+.prog-head b{font-size:16px;color:var(--accent-deep)}
+.bar{height:6px;background:#ECEAE2;border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .3s}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+.empty p{font-size:14px;margin-bottom:14px}
+.empty-btn{display:inline-block;min-height:44px;padding:10px 22px;background:var(--accent);color:#fff;border-radius:10px;font-size:14px;font-weight:600;line-height:1.4}
+.done{background:var(--green-soft);border:1px solid #BFE3CD;border-radius:var(--radius);padding:18px 14px;text-align:center;margin-bottom:12px}
+.done h3{font-size:17px;color:var(--green);margin-bottom:6px}
+.done p{font-size:13px;color:#3F6B53}
+
+/* ===== 新增视图 ===== */
+.field{margin-bottom:16px}
+.field-label{display:block;font-size:14px;font-weight:600;margin-bottom:8px}
+textarea,input,select{font-family:inherit;font-size:16px;color:var(--ink)}
+textarea{width:100%;min-height:140px;border:1px solid var(--border);border-radius:10px;padding:12px;resize:vertical;background:var(--surface);line-height:1.6}
+textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+.drop{border:2px dashed #C9C4B6;border-radius:10px;background:#FBFAF7;padding:22px 14px;text-align:center;cursor:pointer;transition:border-color .15s}
+.drop:hover{border-color:var(--accent)}
+.drop p{font-size:14px;color:var(--ink)}
+.drop.drag{border-color:var(--accent);background:var(--accent-soft)}
+.pending{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.p-chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 8px 7px 12px;font-size:13px;max-width:100%}
+.p-chip .pn{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-chip .ps{color:var(--muted);font-size:12px;flex:none}
+.p-x{border:none;background:var(--danger-soft);color:var(--danger);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:14px;flex:none;line-height:1}
+
+/* ===== 全部记忆 ===== */
+.toolbar{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.toolbar input[type=search],.toolbar select{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--surface)}
+.toolbar select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2370747C' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+.item.row .i-body{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.row-actions .btn{flex:none;min-height:38px;font-size:13px;padding:7px 12px;border-radius:8px}
+.row-actions .btn-bad2{background:var(--surface);color:var(--amber);border:1px solid var(--border)}
+.row-actions .btn-bad2:hover{background:var(--amber-soft)}
+.row-actions .btn-del{background:var(--surface);color:var(--danger);border:1px solid var(--border)}
+.row-actions .btn-del:hover{background:var(--danger-soft)}
+.list-note{font-size:12px;color:var(--muted);margin-bottom:10px}
+
+/* ===== 复习计划 ===== */
+.curve-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+.curve-box svg{width:100%;height:auto;display:block}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.s-node{background:var(--accent-soft);color:var(--accent-deep);font-size:13px;font-weight:600;border-radius:999px;padding:5px 12px}
+.s-arrow{color:#C9C4B6;font-size:14px}
+.rules-list{list-style:none;margin-top:4px}
+.rules-list li{position:relative;padding:7px 0 7px 24px;font-size:14px;border-bottom:1px dashed #EEEBE2}
+.rules-list li:last-child{border-bottom:none}
+.rules-list li::before{content:"";position:absolute;left:6px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.plan-row{display:flex;flex-direction:column;gap:8px}
+.plan-row .btn{flex:none;min-height:42px;font-size:14px}
+.danger-zone{margin-top:10px}
+
+/* ===== 轻提示 & 灯箱 ===== */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#23272B;color:#fff;font-size:14px;padding:10px 18px;border-radius:999px;z-index:60;max-width:90%;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.lightbox{position:fixed;inset:0;background:rgba(20,22,25,.88);z-index:50;display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:20px}
+.lightbox img{max-width:100%;max-height:100%;border-radius:8px}
+.fatal{position:fixed;inset:0;background:var(--surface);z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px;text-align:center}
+.fatal h3{font-size:17px;color:var(--danger)}
+
+@media (min-width:768px){
+  .wrap{padding:28px 24px 80px}
+  .brand h1{font-size:26px}
+  .stats{gap:10px}
+  .tabs{justify-content:flex-start;gap:6px}
+  .tab{flex:none;padding:10px 22px;min-width:110px}
+  .toolbar{flex-direction:row;align-items:center}
+  .toolbar input[type=search]{flex:1}
+  .toolbar select{width:auto}
+  .plan-row{flex-direction:row;align-items:center}
+  .curve-box{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== 头部 ===== -->
+  <header class="top">
+    <div class="top-row">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0E7C74"/><path d="M16 22h32M16 32h32M16 42h20" stroke="#fff" stroke-width="6" stroke-linecap="round"/></svg>
+        <h1>长期记忆</h1>
+      </div>
+      <span class="date" id="todayLabel"></span>
+    </div>
+    <div class="stats">
+      <div class="chip"><b id="stDue">0</b><span>今日待复习</span></div>
+      <div class="chip"><b id="stTotal">0</b><span>累计条目</span></div>
+      <div class="chip"><b id="stDone">0</b><span>今日已复习</span></div>
+      <div class="chip"><b id="stStreak">0</b><span>连续打卡(天)</span></div>
+    </div>
+  </header>
+
+  <!-- ===== 标签页 ===== -->
+  <nav class="tabs" id="tabs">
+    <a href="#/review" class="tab active" data-tab="review">今日复习</a>
+    <a href="#/add" class="tab" data-tab="add">新增记忆</a>
+    <a href="#/all" class="tab" data-tab="all">全部记忆</a>
+    <a href="#/plan" class="tab" data-tab="plan">复习计划</a>
+  </nav>
+
+  <main>
+
+    <!-- ===== 视图：今日复习 ===== -->
+    <section id="view-review" class="view">
+      <div class="prog-wrap">
+        <div class="prog-head"><span id="revTitle">今日待复习</span><b id="revCount">0 项</b></div>
+        <div class="bar"><i id="revBar"></i></div>
+      </div>
+      <div id="reviewList"></div>
+    </section>
+
+    <!-- ===== 视图：新增记忆 ===== -->
+    <section id="view-add" class="view" hidden>
+      <div class="field">
+        <label class="field-label" for="txtInput">文本记忆</label>
+        <textarea id="txtInput" rows="6" placeholder="输入想记住的内容…&#10;每行一条，自动拆分为多条记忆"></textarea>
+        <p class="hint">每行一条，自动拆分为多条记忆</p>
+      </div>
+      <div class="field">
+        <label class="field-label">图片 / PDF 文件</label>
+        <div class="drop" id="dropZone" role="button" tabindex="0">
+          <input type="file" id="fileInput" accept="image/*,application/pdf" multiple hidden>
+          <p>点击选择，或把图片 / PDF 拖到这里</p>
+          <p class="hint">支持 jpg / png / gif / webp / pdf，可多选，每个文件为一条记忆</p>
+        </div>
+        <div class="pending" id="pendingList"></div>
+      </div>
+      <button class="btn-primary" id="btnAdd">加入记忆库</button>
+    </section>
+
+    <!-- ===== 视图：全部记忆 ===== -->
+    <section id="view-all" class="view" hidden>
+      <div class="toolbar">
+        <input type="search" id="searchInput" placeholder="搜索记忆内容或文件名…">
+        <select id="typeFilter">
+          <option value="all">全部类型</option>
+          <option value="text">文本</option>
+          <option value="image">图片</option>
+          <option value="pdf">PDF</option>
+        </select>
+        <select id="sortSelect">
+          <option value="due">按下次复习排序</option>
+          <option value="created">按加入时间排序</option>
+        </select>
+      </div>
+      <p class="list-note" id="allNote"></p>
+      <div id="allList"></div>
+    </section>
+
+    <!-- ===== 视图：复习计划 ===== -->
+    <section id="view-plan" class="view" hidden>
+      <h2>遗忘曲线与复习间隔</h2>
+      <div class="curve-box">
+        <svg viewBox="0 0 760 330" role="img" aria-label="艾宾浩斯遗忘曲线示意：记忆留存随时间衰减，标注点为计划复习日">
+          <line x1="46" y1="300" x2="684" y2="300" stroke="#C9C4B6" stroke-width="1.5"/>
+          <line x1="46" y1="80" x2="46" y2="300" stroke="#C9C4B6" stroke-width="1.5"/>
+          <g font-size="12" fill="#70747C">
+            <text x="46" y="318" text-anchor="middle">0</text>
+            <text x="151.5" y="318" text-anchor="middle">5天</text>
+            <text x="257" y="318" text-anchor="middle">10天</text>
+            <text x="362.5" y="318" text-anchor="middle">15天</text>
+            <text x="468" y="318" text-anchor="middle">20天</text>
+            <text x="573.4" y="318" text-anchor="middle">25天</text>
+            <text x="678.9" y="318" text-anchor="middle">30天</text>
+            <text x="30" y="304" text-anchor="middle">0%</text>
+            <text x="30" y="249" text-anchor="middle">25%</text>
+            <text x="30" y="194" text-anchor="middle">50%</text>
+            <text x="30" y="139" text-anchor="middle">75%</text>
+            <text x="30" y="84" text-anchor="middle">100%</text>
+            <text x="350" y="36" text-anchor="middle" font-size="14" fill="#23272B" font-weight="600">记忆留存随时间衰减（示意）</text>
+          </g>
+          <g stroke="#ECEAE2">
+            <line x1="151.5" y1="300" x2="151.5" y2="80"/>
+            <line x1="257" y1="300" x2="257" y2="80"/>
+            <line x1="362.5" y1="300" x2="362.5" y2="80"/>
+            <line x1="468" y1="300" x2="468" y2="80"/>
+            <line x1="573.4" y1="300" x2="573.4" y2="80"/>
+            <line x1="678.9" y1="300" x2="678.9" y2="80"/>
+          </g>
+          <polyline fill="none" stroke="#0E7C74" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            points="46,80 67.1,119.9 88.2,152.5 109.3,179.3 130.4,201.2 151.5,219.1 172.6,233.7 193.7,245.8 214.8,255.6 235.9,263.6 257,270.2 278.1,275.6 299.2,280.1 320.3,283.7 341.4,286.6 362.5,289 383.5,291 404.6,292.7 425.7,294 446.8,295.1 467.9,296 489,296.7 510.1,297.3 531.2,297.8 552.3,298.2 573.4,298.5 594.5,298.8 615.6,299 636.7,299.2 657.8,299.3 678.9,299.5"/>
+          <g>
+            <line x1="67.1" y1="119.9" x2="67.1" y2="300" stroke="#B45309" stroke-dasharray="3 3"/>
+            <line x1="88.2" y1="152.5" x2="88.2" y2="300" stroke="#B45309" stroke-dasharray="3 3"/>
+            <line x1="130.4" y1="201.2" x2="130.4" y2="300" stroke="#B45309" stroke-dasharray="3 3"/>
+            <line x1="193.7" y1="245.8" x2="193.7" y2="300" stroke="#B45309" stroke-dasharray="3 3"/>
+            <line x1="362.5" y1="289" x2="362.5" y2="300" stroke="#B45309" stroke-dasharray="3 3"/>
+            <line x1="678.9" y1="299.5" x2="678.9" y2="300" stroke="#B45309" stroke-dasharray="3 3"/>
+          </g>
+          <g fill="#0E7C74">
+            <circle cx="67.1" cy="119.9" r="4.5"/>
+            <circle cx="88.2" cy="152.5" r="4.5"/>
+            <circle cx="130.4" cy="201.2" r="4.5"/>
+            <circle cx="193.7" cy="245.8" r="4.5"/>
+            <circle cx="362.5" cy="289" r="4.5"/>
+            <circle cx="678.9" cy="299.5" r="4.5"/>
+          </g>
+          <g font-size="12" font-weight="600" fill="#B45309" text-anchor="middle" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">
+            <text x="67.1" y="92">1天 82%</text>
+            <text x="88.2" y="124">2天 67%</text>
+            <text x="130.4" y="172">4天 45%</text>
+            <text x="193.7" y="216">7天 25%</text>
+            <text x="362.5" y="258">15天 5%</text>
+            <text x="678.9" y="272">&lt;1%</text>
+          </g>
+        </svg>
+        <p class="hint">示意：未复习时记忆留存随时间指数衰减；每次"记住了"会把该条目重新拉回高留存区间</p>
+      </div>
+
+      <div class="card">
+        <div class="flow" id="stageFlow"></div>
+        <p class="hint">新增记忆后第 2 天第一次复习，随后按 2、4、7、15、30…天间隔逐步拉长</p>
+      </div>
+
+      <h2>规则说明</h2>
+      <div class="card">
+        <ul class="rules-list">
+          <li>新增内容后第 2 天进行第一次复习（间隔 1 天）</li>
+          <li>复习时点"记住了"：进入下一复习间隔（1→2→4→7→15→30→60→120→240→365 天）</li>
+          <li>点"忘记了"：该条重置为首次状态，明天重新开始复习</li>
+          <li>错过复习日：逾期条目会自动累积，打开页面即出现在"今日复习"里</li>
+          <li>间隔遵循艾宾浩斯遗忘曲线的常用复习节奏，重点内容可随时在"全部记忆"中重学</li>
+        </ul>
+      </div>
+
+      <h2>数据管理</h2>
+      <div class="card">
+        <div class="plan-row">
+          <button class="btn-ghost" id="btnExport">导出备份</button>
+          <button class="btn-ghost" id="btnImport">导入备份</button>
+          <input type="file" id="importInput" accept="application/json,text/plain" hidden>
+        </div>
+        <div class="danger-zone plan-row">
+          <button class="btn-danger" id="btnWipe">清空全部数据</button>
+        </div>
+        <p class="hint">数据保存在本机浏览器（IndexedDB），不联网也可用。更换浏览器或清理浏览器数据前，请先导出备份；空间占用：<b id="usageInfo">0 KB</b></p>
+      </div>
+
+      <h2>每日提醒</h2>
+      <div class="card">
+        <p>本页面已注册 Windows 每日计划任务：每天 09:00 自动打开此网页提醒复习。</p>
+        <p class="hint">想改时间（如改为晚上 8 点）或临时停用，直接告诉豆包即可调整；电脑关机时提醒不会弹出，可手动打开本文件复习。</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<div id="lightbox" class="lightbox" hidden><img id="lightboxImg" alt=""></div>
+
+<script>
+// ===== JS:CORE =====
+'use strict';
+const STAGES=[1,2,4,7,15,30,60,120,240,365];
+const TYPE_LABEL={text:'文本',image:'图片',pdf:'PDF'};
+const DAY=86400000;
+
+/* ---------- 日期工具 ---------- */
+function pad(n){return n<10?'0'+n:''+n;}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function parseDate(s){return new Date(s+'T00:00:00');}
+function addDays(s,n){const d=parseDate(s);d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function diffDays(a,b){return Math.round((parseDate(b)-parseDate(a))/DAY);}
+function fmtDate(s){const d=parseDate(s);return (d.getMonth()+1)+'月'+d.getDate()+'日';}
+function fmtToday(){const d=new Date();const w=['日','一','二','三','四','五','六'][d.getDay()];return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日 星期'+w;}
+
+/* ---------- IndexedDB ---------- */
+let db=null;
+let items=[];   // 内存缓存
+function openDB(){return new Promise(function(res,rej){
+  var r=indexedDB.open('memoryDB',1);
+  r.onupgradeneeded=function(){r.result.createObjectStore('items',{keyPath:'id'});};
+  r.onsuccess=function(){res(r.result);};
+  r.onerror=function(){rej(r.error);};
+});}
+function txGetAll(){return new Promise(function(res,rej){
+  var t=db.transaction('items','readonly');
+  var q=t.objectStore('items').getAll();
+  q.onsuccess=function(){res(q.result||[]);};
+  q.onerror=function(){rej(q.error);};
+});}
+function txPut(item){return new Promise(function(res,rej){
+  var t=db.transaction('items','readwrite');
+  var q=t.objectStore('items').put(item);
+  q.onsuccess=function(){res();};
+  q.onerror=function(){rej(q.error);};
+});}
+function txDelete(id){return new Promise(function(res,rej){
+  var t=db.transaction('items','readwrite');
+  var q=t.objectStore('items').delete(id);
+  q.onsuccess=function(){res();};
+  q.onerror=function(){rej(q.error);};
+});}
+function txClear(){return new Promise(function(res,rej){
+  var t=db.transaction('items','readwrite');
+  var q=t.objectStore('items').clear();
+  q.onsuccess=function(){res();};
+  q.onerror=function(){rej(q.error);};
+});}
+async function loadItems(){items=await txGetAll();}
+async function saveItem(item){await txPut(item);var i=items.findIndex(function(x){return x.id===item.id;});if(i>=0){items[i]=item;}else{items.push(item);}}
+async function removeItem(id){await txDelete(id);items=items.filter(function(x){return x.id!==id;});revokeURL(id);}
+
+/* ---------- 遗忘曲线调度 ---------- */
+function intervalFor(count){return count<STAGES.length?STAGES[count]:365;}
+function isDue(it){return it.nextReview<=todayStr();}
+function overdueOf(it){var d=diffDays(it.nextReview,todayStr());return d>0?d:0;}
+function stageLabel(it){return it.reviewCount===0?'首次复习':'第'+it.reviewCount+'次复习';}
+function newItem(type,text,name,mime,blob){
+  return {id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),type:type,text:text||'',name:name||'',mime:mime||'',blob:blob||null,createdAt:todayStr(),reviewCount:0,nextReview:addDays(todayStr(),STAGES[0]),lastReviewed:''};
+}
+
+/* ---------- 打卡统计 ---------- */
+let reviewDays=[];
+function loadDays(){try{reviewDays=JSON.parse(localStorage.getItem('mem_reviewDays')||'[]');if(!Array.isArray(reviewDays)){reviewDays=[];}}catch(e){reviewDays=[];}}
+function saveDays(){localStorage.setItem('mem_reviewDays',JSON.stringify(reviewDays));}
+function markReviewedToday(){var t=todayStr();if(reviewDays.indexOf(t)<0){reviewDays.push(t);saveDays();}}
+function streak(){
+  var set={};reviewDays.forEach(function(d){set[d]=1;});
+  var cur=new Date();
+  if(!set[todayStr()]){cur.setDate(cur.getDate()-1);}
+  var n=0;
+  while(true){
+    var s=cur.getFullYear()+'-'+pad(cur.getMonth()+1)+'-'+pad(cur.getDate());
+    if(!set[s]){break;}
+    n++;cur.setDate(cur.getDate()-1);
+  }
+  return n;
+}
+function doneToday(){return items.filter(function(x){return x.lastReviewed===todayStr();}).length;}
+function goodToday(){return items.filter(function(x){return x.lastReviewed===todayStr()&&x.reviewCount>0;}).length;}
+
+/* ---------- 添加记忆 ---------- */
+async function addTextItems(lines){
+  var n=0;
+  for(var i=0;i<lines.length;i++){
+    var s=(lines[i]||'').trim();
+    if(!s){continue;}
+    await saveItem(newItem('text',s,'',''));
+    n++;
+  }
+  return n;
+}
+async function addFileItem(file){
+  if(!/^image\//.test(file.type)&&file.type!=='application/pdf'){
+    throw new Error('不支持的文件类型：'+file.name);
+  }
+  var type=file.type==='application/pdf'?'pdf':'image';
+  var buf=await file.arrayBuffer();
+  var blob=new Blob([buf],{type:file.type});
+  await saveItem(newItem(type,'',file.name,file.type,blob));
+}
+
+/* ---------- 复习作答 ---------- */
+function answer(id,remembered){
+  var it=items.find(function(x){return x.id===id;});
+  if(!it){return false;}
+  var t=todayStr();
+  it.lastReviewed=t;
+  if(remembered){
+    it.reviewCount+=1;
+    it.nextReview=addDays(t,intervalFor(it.reviewCount));
+  }else{
+    it.reviewCount=0;
+    it.nextReview=addDays(t,STAGES[0]);
+  }
+  saveItem(it);
+  markReviewedToday();
+  return it;
+}
+function resetReview(id){
+  var it=items.find(function(x){return x.id===id;});
+  if(!it){return;}
+  it.reviewCount=0;
+  it.nextReview=addDays(todayStr(),STAGES[0]);
+  saveItem(it);
+}
+
+/* ---------- 导出 / 导入 ---------- */
+function blobToB64(blob){
+  return new Promise(function(res,rej){
+    var fr=new FileReader();
+    fr.onload=function(){var bin=fr.result;var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++){bytes[i]=bin.charCodeAt(i);}var chunk='';var CH=0x8000;for(var j=0;j<bytes.length;j+=CH){chunk+=String.fromCharCode.apply(null,bytes.subarray(j,j+CH));}res(btoa(chunk));};
+    fr.onerror=function(){rej(fr.error);};
+    fr.readAsBinaryString(blob);
+  });
+}
+async function exportData(){
+  var data={app:'长期记忆复习',version:1,exportedAt:new Date().toISOString(),items:[]};
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    var o={id:it.id,type:it.type,text:it.text||'',name:it.name||'',mime:it.mime,createdAt:it.createdAt,reviewCount:it.reviewCount,nextReview:it.nextReview,lastReviewed:it.lastReviewed};
+    if(it.blob){o.b64=await blobToB64(it.blob);}
+    data.items.push(o);
+  }
+  var blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='长期记忆备份-'+todayStr()+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},4000);
+  return data.items.length;
+}
+async function importData(file){
+  var text=await file.text();
+  var data=JSON.parse(text);
+  if(!data||!Array.isArray(data.items)){throw new Error('备份文件格式不正确');}
+  var n=0;
+  for(var i=0;i<data.items.length;i++){
+    var o=data.items[i];
+    var it={id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),
+      type:(o.type==='image'||o.type==='pdf')?o.type:'text',
+      text:o.text||'',name:o.name||'',mime:o.mime||'',
+      createdAt:o.createdAt||todayStr(),
+      reviewCount:typeof o.reviewCount==='number'?o.reviewCount:0,
+      nextReview:o.nextReview||addDays(todayStr(),STAGES[0]),
+      lastReviewed:o.lastReviewed||''};
+    if(o.b64){
+      var bin=atob(o.b64);var bytes=new Uint8Array(bin.length);
+      for(var j=0;j<bin.length;j++){bytes[j]=bin.charCodeAt(j);}
+      it.blob=new Blob([bytes],{type:it.mime||'application/octet-stream'});
+    }
+    await saveItem(it);
+    n++;
+  }
+  return n;
+}
+
+/* ---------- 数据占用 ---------- */
+function usageBytes(){
+  var total=0;
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    total+=(it.text?it.text.length*2:0)+(it.name?it.name.length*2:0);
+    if(it.blob&&it.blob.size){total+=it.blob.size;}
+  }
+  return total;
+}
+function fmtSize(b){
+  if(b>=1048576){return (b/1048576).toFixed(1)+' MB';}
+  if(b>=1024){return Math.round(b/1024)+' KB';}
+  return b+' B';
+}
+// ===== JS:UI =====
+const $=function(s){return document.querySelector(s);};
+const ICON_PDF='<svg width="18" height="22" viewBox="0 0 18 22" fill="none" aria-hidden="true"><path d="M1 1h11l5 5v15H1z" stroke="#B45309" stroke-width="1.6"/><path d="M12 1v5h5" stroke="#B45309" stroke-width="1.6"/><path d="M4 12h10M4 16h7" stroke="#B45309" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const ICON_IMG='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#2563EB" stroke-width="1.7"/><circle cx="9" cy="10" r="1.8" fill="#2563EB"/><path d="M4 17l5-5 4 4 3-3 4 4" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+function escAttr(s){return esc(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+/* ---------- Blob URL ---------- */
+const urlCache=new Map();
+function objURL(it){
+  if(it.type==='text'||!it.blob){return '';}
+  if(urlCache.has(it.id)){return urlCache.get(it.id);}
+  var u=URL.createObjectURL(it.blob);
+  urlCache.set(it.id,u);
+  return u;
+}
+function revokeURL(id){var u=urlCache.get(id);if(u){URL.revokeObjectURL(u);urlCache.delete(id);}}
+function revokeAll(){urlCache.forEach(function(u){URL.revokeObjectURL(u);});urlCache.clear();}
+
+/* ---------- Toast ---------- */
+let toastTimer=null;
+function toast(msg){
+  var el=$('#toast');
+  el.textContent=msg;
+  el.hidden=false;
+  if(toastTimer){clearTimeout(toastTimer);}
+  toastTimer=setTimeout(function(){el.hidden=true;},2600);
+}
+
+/* ---------- 主渲染 ---------- */
+function dueCount(){return items.filter(isDue).length;}
+function render(){
+  updateStats();
+  renderReview();
+  renderAll();
+  renderPlan();
+  document.title=(dueCount()>0?('今日待复习 '+dueCount()+' 项 · 长期记忆'):'长期记忆复习');
+}
+function updateStats(){
+  $('#stDue').textContent=dueCount();
+  $('#stTotal').textContent=items.length;
+  $('#stDone').textContent=doneToday();
+  $('#stStreak').textContent=streak();
+}
+
+/* ---------- 今日复习 ---------- */
+function renderReview(){
+  const list=$('#reviewList');
+  const due=items.filter(isDue).sort(function(a,b){return overdueOf(b)-overdueOf(a)||a.nextReview.localeCompare(b.nextReview);});
+  const answered=doneToday();
+  const total=answered+due.length;
+  $('#revTitle').textContent='今日待复习'+(due.length?'（含逾期 '+due.filter(function(x){return overdueOf(x)>0;}).length+' 项）':'');
+  $('#revCount').textContent=due.length+' 项';
+  $('#revBar').style.width=(total>0?Math.min(100,Math.round(answered/total*100)):0)+'%';
+  let html='';
+  if(due.length===0){
+    if(answered>0){
+      const good=goodToday();
+      const rate=answered>0?Math.round(good/answered*100):0;
+      html+='<div class="done"><h3>今日复习完成</h3><p>今日已复习 '+answered+' 项 · 记住 '+good+' 项（'+rate+'%）· 连续打卡 '+streak()+' 天</p></div>';
+    }else{
+      html+='<div class="empty"><p>今天没有待复习的内容，记忆库是空的或都已安排到未来。</p><a class="empty-btn" href="#/add">去添加新记忆</a></div>';
+    }
+  }else{
+    due.forEach(function(it){
+      html+=cardHTML(it,'full');
+    });
+  }
+  list.innerHTML=html;
+}
+
+/* ---------- 卡片模板 ---------- */
+function cardHTML(it,mode){
+  const chip='<span class="chip-type">'+TYPE_LABEL[it.type]+'</span>';
+  const date='<span class="i-date">加入 '+fmtDate(it.createdAt)+'</span>';
+  let body='';
+  if(it.type==='text'){
+    body+='<div class="i-body">'+esc(it.text)+'</div>';
+  }else if(it.type==='image'){
+    const u=objURL(it);
+    body+='<img class="i-img" src="'+u+'" alt="记忆图片" data-full="'+u+'" title="点击查看原图">';
+  }else if(it.type==='pdf'){
+    const u=objURL(it);
+    body+='<div class="i-file"><span class="ficon">'+ICON_PDF+'</span><span class="fname">'+esc(it.name)+'</span><button class="btn-open" data-open="'+u+'">打开</button></div>';
+  }
+  let meta='<span class="m-tag">'+stageLabel(it)+'</span>';
+  if(isDue(it)){
+    const od=overdueOf(it);
+    meta+=od>0?'<span class="m-tag m-late">逾期 '+od+' 天</span>':'<span class="m-tag m-next">今日待复习</span>';
+  }else{
+    meta+='<span class="m-tag m-next">下次 '+fmtDate(it.nextReview)+'</span>';
+  }
+  const actions='<div class="i-actions"><button class="btn btn-good" data-act="good" data-id="'+escAttr(it.id)+'">记住了</button><button class="btn btn-bad" data-act="bad" data-id="'+escAttr(it.id)+'">忘记了</button></div>';
+  return '<div class="item t-'+it.type+'"><div class="i-top">'+chip+date+'</div>'+body+'<div class="i-meta">'+meta+'</div>'+actions+'</div>';
+}
+
+/* ---------- 全部记忆 ---------- */
+function renderAll(){
+  const q=($('#searchInput').value||'').trim().toLowerCase();
+  const tf=$('#typeFilter').value;
+  const sf=$('#sortSelect').value;
+  let list=items.filter(function(it){
+    if(tf!=='all'&&it.type!==tf){return false;}
+    if(q){
+      const hay=(it.text||'')+' '+(it.name||'');
+      if(hay.toLowerCase().indexOf(q)<0){return false;}
+    }
+    return true;
+  });
+  list=list.slice().sort(function(a,b){
+    if(sf==='created'){return b.createdAt.localeCompare(a.createdAt);}
+    return overdueOf(b)-overdueOf(a)||a.nextReview.localeCompare(b.nextReview);
+  });
+  $('#allNote').textContent='共 '+list.length+' 条'+(tf!=='all'||q?'（已筛选）':'');
+  const el=$('#allList');
+  if(list.length===0){
+    el.innerHTML='<div class="empty"><p>没有匹配的记忆。</p></div>';
+    return;
+  }
+  let html='';
+  list.forEach(function(it){
+    let body='';
+    if(it.type==='text'){body+='<div class="i-body">'+esc(it.text)+'</div>';}
+    else if(it.type==='image'){body+='<img class="i-img" style="max-height:140px" src="'+objURL(it)+'" alt="记忆图片" data-full="'+objURL(it)+'">';}
+    else{body+='<div class="i-body">'+ICON_PDF+' '+esc(it.name)+'</div>';}
+    let meta='<span class="m-tag">'+stageLabel(it)+'</span>';
+    if(isDue(it)){
+      const od=overdueOf(it);
+      meta+=od>0?'<span class="m-tag m-late">逾期 '+od+' 天</span>':'<span class="m-tag m-next">今日待复习</span>';
+    }else{
+      meta+='<span class="m-tag m-next">下次 '+fmtDate(it.nextReview)+'</span>';
+    }
+    html+='<div class="item row t-'+it.type+'"><div class="i-top"><span class="chip-type">'+TYPE_LABEL[it.type]+'</span><span class="i-date">加入 '+fmtDate(it.createdAt)+'</span></div>'+body+'<div class="i-meta">'+meta+'</div><div class="row-actions"><button class="btn btn-good" data-act="good" data-id="'+escAttr(it.id)+'">记住了</button><button class="btn btn-bad2" data-act="bad" data-id="'+escAttr(it.id)+'">忘记了</button><button class="btn btn-ghost" data-act="reset" data-id="'+escAttr(it.id)+'">重学</button><button class="btn btn-del" data-act="del" data-id="'+escAttr(it.id)+'">删除</button></div></div>';
+  });
+  el.innerHTML=html;
+}
+
+/* ---------- 复习计划 ---------- */
+function renderPlan(){
+  const flow=$('#stageFlow');
+  let html='';
+  STAGES.forEach(function(d,i){
+    if(i>0){html+='<span class="s-arrow">→</span>';}
+    html+='<span class="s-node">'+d+'天</span>';
+  });
+  flow.innerHTML=html;
+  $('#usageInfo').textContent=fmtSize(usageBytes());
+}
+
+/* ---------- 路由 ---------- */
+const VIEWS={review:'#view-review',add:'#view-add',all:'#view-all',plan:'#view-plan'};
+function route(){
+  const hash=location.hash.replace(/^#\/?/,'')||'review';
+  const tab=(hash==='add'||hash==='all'||hash==='plan')?hash:'review';
+  document.querySelectorAll('.tab').forEach(function(a){a.classList.toggle('active',a.dataset.tab===tab);});
+  Object.keys(VIEWS).forEach(function(k){$(VIEWS[k]).hidden=(k!==tab);});
+  if(tab==='review'){renderReview();}
+  if(tab==='all'){renderAll();}
+  if(tab==='plan'){renderPlan();}
+}
+
+/* ---------- 新增记忆 ---------- */
+let pendingFiles=[];
+function renderPending(){
+  const el=$('#pendingList');
+  let html='';
+  pendingFiles.forEach(function(p,i){
+    const size=p.size>=1048576?(p.size/1048576).toFixed(1)+' MB':Math.max(1,Math.round(p.size/1024))+' KB';
+    html+='<span class="p-chip"><span class="pn">'+esc(p.name)+'</span><span class="ps">'+size+'</span><button class="p-x" data-rm="'+i+'" aria-label="移除">×</button></span>';
+  });
+  el.innerHTML=html;
+}
+function bindAdd(){
+  const drop=$('#dropZone');
+  const fileInput=$('#fileInput');
+  drop.addEventListener('click',function(){fileInput.click();});
+  drop.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();fileInput.click();}});
+  ['dragover','dragenter'].forEach(function(ev){
+    drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag');});
+  });
+  ['dragleave','drop'].forEach(function(ev){
+    drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag');});
+  });
+  drop.addEventListener('drop',function(e){
+    const files=e.dataTransfer&&e.dataTransfer.files?Array.prototype.slice.call(e.dataTransfer.files):[];
+    addFiles(files);
+  });
+  fileInput.addEventListener('change',function(){
+    addFiles(Array.prototype.slice.call(fileInput.files));
+    fileInput.value='';
+  });
+  $('#pendingList').addEventListener('click',function(e){
+    const rm=e.target.closest('[data-rm]');
+    if(rm){pendingFiles.splice(Number(rm.dataset.rm),1);renderPending();}
+  });
+  $('#btnAdd').addEventListener('click',async function(){
+    const text=$('#txtInput').value;
+    const lines=text.split('\n');
+    if(!lines.some(function(s){return s.trim();})&&pendingFiles.length===0){
+      toast('请先输入文本或选择文件');
+      return;
+    }
+    this.disabled=true;this.textContent='正在加入…';
+    let n=0;
+    try{
+      n+=await addTextItems(lines);
+      for(let i=0;i<pendingFiles.length;i++){
+        try{await addFileItem(pendingFiles[i]);n++;}
+        catch(err){toast(err.message);}
+      }
+      $('#txtInput').value='';
+      pendingFiles=[];renderPending();
+      toast('已加入记忆库 '+n+' 条，明天开始第一次复习');
+      render();
+    }catch(err){
+      toast('添加失败：'+err.message);
+    }
+    this.disabled=false;this.textContent='加入记忆库';
+  });
+}
+function addFiles(files){
+  let bad=0;
+  files.forEach(function(f){
+    if(/^image\//.test(f.type)||f.type==='application/pdf'){pendingFiles.push(f);}
+    else{bad++;}
+  });
+  if(bad>0){toast('已忽略 '+bad+' 个不支持的文件');}
+  renderPending();
+}
+
+/* ---------- 全部记忆工具栏 ---------- */
+function bindAll(){
+  $('#searchInput').addEventListener('input',renderAll);
+  $('#typeFilter').addEventListener('change',renderAll);
+  $('#sortSelect').addEventListener('change',renderAll);
+}
+
+/* ---------- 数据管理 ---------- */
+function bindPlan(){
+  $('#btnExport').addEventListener('click',async function(){
+    try{
+      const n=await exportData();
+      toast('已导出 '+n+' 条记忆备份');
+    }catch(err){toast('导出失败：'+err.message);}
+  });
+  $('#btnImport').addEventListener('click',function(){$('#importInput').click();});
+  $('#importInput').addEventListener('change',async function(){
+    const f=this.files[0];
+    this.value='';
+    if(!f){return;}
+    try{
+      const n=await importData(f);
+      toast('已导入 '+n+' 条记忆');
+      render();
+    }catch(err){toast('导入失败：'+err.message);}
+  });
+  $('#btnWipe').addEventListener('click',async function(){
+    if(items.length===0){toast('当前没有数据');return;}
+    if(!confirm('将清空全部 '+items.length+' 条记忆，且无法恢复。确定？')){return;}
+    if(!confirm('再次确认：真的要清空吗？建议先导出备份。')){return;}
+    await txClear();
+    revokeAll();
+    items=[];
+    render();
+    toast('已清空全部数据');
+  });
+}
+
+/* ---------- 事件委托 ---------- */
+function bindGlobal(){
+  document.addEventListener('click',function(e){
+    const full=e.target.closest('[data-full]');
+    if(full){
+      const img=$('#lightboxImg');
+      img.src=full.dataset.full;
+      $('#lightbox').hidden=false;
+      return;
+    }
+    const open=e.target.closest('[data-open]');
+    if(open){
+      const w=window.open(open.dataset.open,'_blank');
+      if(!w){location.href=open.dataset.open;}
+      return;
+    }
+    const act=e.target.closest('[data-act]');
+    if(act){
+      const id=act.dataset.id;
+      if(act.dataset.act==='del'){
+        if(confirm('删除这条记忆？删除后不可恢复。')){
+          removeItem(id).then(function(){render();toast('已删除');});
+        }
+        return;
+      }
+      if(act.dataset.act==='reset'){
+        resetReview(id);
+        render();
+        toast('已重置，明天重新开始');
+        return;
+      }
+      const remembered=act.dataset.act==='good';
+      const it=answer(id,remembered);
+      if(it){
+        render();
+        toast(remembered?('已记住，下次 '+fmtDate(it.nextReview)+' 再见'):'已重置，明天再来一次');
+      }
+      return;
+    }
+  });
+  $('#lightbox').addEventListener('click',function(){$('#lightbox').hidden=true;});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){$('#lightbox').hidden=true;}});
+  window.addEventListener('hashchange',route);
+}
+
+/* ---------- 初始化 ---------- */
+(async function init(){
+  $('#todayLabel').textContent=fmtToday();
+  try{
+    db=await openDB();
+    await loadItems();
+  }catch(err){
+    const d=document.createElement('div');
+    d.className='fatal';
+    d.innerHTML='<h3>无法打开本地数据库</h3><p>请使用 Chrome / Edge 浏览器打开本页面，或检查浏览器是否禁止了本地存储。</p><p style="font-size:12px;color:#70747C">'+esc(err&&err.message?err.message:'')+'</p>';
+    document.body.appendChild(d);
+    return;
+  }
+  loadDays();
+  bindAdd();
+  bindAll();
+  bindPlan();
+  bindGlobal();
+  render();
+  route();
+
+  /* 调试 / 验证用（正常使用不受影响）：仅初始化完成后可用 */
+  window.Memory={
+    _ready:true,
+    _demo:function(arr){items=arr.slice();render();},
+    _items:function(){return items.slice();},
+    addTextItems:addTextItems,
+    answer:answer,
+    render:render
+  };
+})();
+</script>
+</body>
+</html>
